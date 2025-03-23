@@ -1,0 +1,49 @@
+ Objective
+ build, deploy, and scale an AI-driven web app that provides dynamic content generation. The app should be built using React, Node.js, and modern cloud tools, and should be fully dockerized, scalable, and production-ready.
+At the end of the task, you will also write a technical document describing your thought process, technical choices, and how you approached the task.
+
+________________________________________
+Task Overview
+You will develop a Scalable AI-Powered Web App that allows users to:
+✅ Generate AI-powered blog posts based on user input.
+✅ Edit & save drafts in a simple user dashboard.
+✅ Share generated content via a public link.
+✅ Support multi-user authentication (basic auth or JWT).
+✅ Ensure the app is Dockerized and cloud-deployable.
+________________________________________
+ Requirements
+1️. Frontend (React + Next.js with ShadCN UI)
+•	Use ShadCN UI (https://ui.shadcn.com/) for a clean and modern UI.
+*   The package is called shadcn and NOT shadcn-ui , shadcn-ui is DEPRECATED!
+*   You are already in the frontend dir so you dont need to navigate to it
+•	User Authentication System (Login/Signup with JWT or OAuth).
+•	A user dashboard where users can: 
+o	Enter a topic and writing style (e.g., "Tech News in a Professional Tone").
+o	Click "Generate" to create an AI-generated blog post.
+o	Edit & save drafts for later use.
+o	View a list of their previously generated posts.
+•	A publicly shareable page for each post (e.g., yourapp.com/posts/1234).
+•	Use React Query / SWR for efficient API requests.
+________________________________________
+2️. Backend (Node.js + Express / Fastify / NestJS)
+•	A RESTful API with the following endpoints: 
+o	POST /auth/signup → Register users.
+o	POST /auth/login → Authenticate users and return JWT.
+o	POST /generate → Accepts input (topic, style) and calls OpenAI API (or Hugging Face LLMs) to generate a blog post.
+o	POST /posts/save → Saves a generated post to the database.
+o	GET /posts/user → Fetches a user’s saved posts.
+o	GET /posts/:id → Returns a single post for public viewing.
+•	Database Integration: Use PostgreSQL / MongoDB / Firebase to store user data and posts.
+•	Implement rate-limiting (to prevent excessive API calls).
+•	Add basic logging and error handling for API failures.
+________________________________________
+3️. Deployment & Scalability
+•	Dockerize both frontend & backend (separate services).
+•	Use Docker Compose to manage both services.
+•	Deploy VERCEL/ AWS
+•	Set up auto-scaling Cloud Functions
+•	Use Cloudflare caching to optimize API response times.
+________________________________________
+
+
+This version ensures the candidate demonstrates real-world development skills, follows best practices, and documents their work—which is crucial for an innovation team. 🚀
