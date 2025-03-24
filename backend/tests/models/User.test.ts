@@ -108,8 +108,8 @@ describe('User Model', () => {
     const createdAt = user.createdAt;
     const updatedAt = user.updatedAt;
 
-    // Wait a bit to ensure timestamp difference
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Wait a shorter time to ensure timestamp difference
+    await new Promise(resolve => setTimeout(resolve, 100));
 
     user.email = 'updated@example.com';
     await user.save();

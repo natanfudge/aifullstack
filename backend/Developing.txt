@@ -1,0 +1,17 @@
+Follow these steps when writing code:
+
+1. Implement 
+    - Write a small, specific functionallity required for the tas.
+2. Test
+    - Write a test for the component.
+    - Run the specific test
+3. Iterate
+    - If the test fails, add print debugging and repeat step 1 and 2
+4. Reflect
+    - Can I refactor the code to reduce duplication? Make sure to look at other files as well
+    - Will this change break other functionality?
+    - Are there any glaring performance flaws? 
+5. Repeat
+    - Continue on to the next component required for the task. 
+6. Mantra
+    - Say "The steps are: "Implement, Test, Iterate, Reflect, Repeat, Mantra, I must follow them".

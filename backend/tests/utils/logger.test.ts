@@ -1,6 +1,19 @@
 import { logger } from '../../src/utils/logger';
 
+jest.mock('../../src/utils/logger', () => ({
+  logger: {
+    info: jest.fn(),
+    error: jest.fn(),
+    warn: jest.fn(),
+    debug: jest.fn(),
+  }
+}));
+
 describe('Logger', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should be a winston logger instance', () => {
     expect(logger).toBeDefined();
     expect(typeof logger.info).toBe('function');

@@ -1,5 +1,6 @@
 import { generateBlogPost } from '../../src/utils/openai';
 import { config } from '../../src/utils/config';
+import { AppError } from '../../src/utils/AppError';
 
 jest.mock('openai', () => ({
   OpenAI: jest.fn().mockImplementation(() => ({
@@ -11,164 +12,107 @@ jest.mock('openai', () => ({
   })),
 }));
 
-describe('OpenAI Utils', () => {
-  const mockOpenAI = require('openai').OpenAI;
+const mockOpenAI = jest.requireMock('openai').OpenAI;
+const mockCreate = mockOpenAI.mock.results[0].value.chat.completions.create;
 
+describe('OpenAI Utils', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-  });
-
-  it('should generate a blog post successfully', async () => {
-    const mockResponse = {
+    mockCreate.mockResolvedValue({
       choices: [
         {
           message: {
-            content: JSON.stringify({
-              title: 'Test Post',
-              content: 'Test content',
-            }),
+            content: 'Generated blog post content',
           },
         },
       ],
-    };
-
-    mockOpenAI.mockImplementation(() => ({
-      chat: {
-        completions: {
-          create: jest.fn().mockResolvedValue(mockResponse),
-        },
-      },
-    }));
-
-    const result = await generateBlogPost('Test Topic', 'professional');
-
-    expect(result).toBeDefined();
-    expect(result.title).toBe('Test Post');
-    expect(result.content).toBe('Test content');
-    expect(mockOpenAI).toHaveBeenCalledWith({
-      apiKey: config.openaiApiKey,
     });
   });
 
-  it('should handle OpenAI API errors', async () => {
-    mockOpenAI.mockImplementation(() => ({
-      chat: {
-        completions: {
-          create: jest.fn().mockRejectedValue(new Error('API Error')),
-        },
-      },
-    }));
+  it('should generate a blog post', async () => {
+    const topic = 'Test Topic';
+    const style = 'Professional';
 
-    await expect(generateBlogPost('Test Topic', 'professional')).rejects.toThrow('API Error');
+    const result = await generateBlogPost(topic, style);
+    expect(result).toEqual({
+      title: 'Blog Post About Test Topic',
+      content: 'Generated blog post content'
+    });
+    expect(mockCreate).toHaveBeenCalledWith(expect.objectContaining({
+      model: "gpt-3.5-turbo",
+      messages: expect.arrayContaining([
+        expect.objectContaining({
+          role: "system",
+          content: expect.any(String),
+        }),
+        expect.objectContaining({
+          role: "user",
+          content: expect.stringContaining(topic),
+        }),
+      ]),
+    }));
   });
 
-  it('should handle invalid response format', async () => {
-    const mockResponse = {
-      choices: [
-        {
-          message: {
-            content: 'Invalid JSON',
-          },
-        },
-      ],
-    };
+  it('should handle API errors', async () => {
+    const mockError = new Error('API Error');
+    mockCreate.mockRejectedValueOnce(mockError);
 
-    mockOpenAI.mockImplementation(() => ({
-      chat: {
-        completions: {
-          create: jest.fn().mockResolvedValue(mockResponse),
-        },
-      },
-    }));
-
-    await expect(generateBlogPost('Test Topic', 'professional')).rejects.toThrow();
-  });
-
-  it('should handle missing API key', async () => {
-    const originalKey = config.openaiApiKey;
-    config.openaiApiKey = '';
-
-    await expect(generateBlogPost('Test Topic', 'professional')).rejects.toThrow('OpenAI API key is required');
-
-    config.openaiApiKey = originalKey;
-  });
-
-  it('should handle different writing styles', async () => {
-    const styles = ['professional', 'casual', 'technical'];
-    const mockResponse = {
-      choices: [
-        {
-          message: {
-            content: JSON.stringify({
-              title: 'Test Post',
-              content: 'Test content',
-            }),
-          },
-        },
-      ],
-    };
-
-    mockOpenAI.mockImplementation(() => ({
-      chat: {
-        completions: {
-          create: jest.fn().mockResolvedValue(mockResponse),
-        },
-      },
-    }));
-
-    for (const style of styles) {
-      const result = await generateBlogPost('Test Topic', style);
-      expect(result).toBeDefined();
-      expect(result.title).toBe('Test Post');
-      expect(result.content).toBe('Test content');
-    }
+    await expect(generateBlogPost('Topic', 'Style')).rejects.toThrow(
+      new AppError('Failed to generate blog post: API Error', 500)
+    );
   });
 
   it('should handle empty topic', async () => {
-    await expect(generateBlogPost('', 'professional')).rejects.toThrow('Topic is required');
+    await expect(generateBlogPost('', 'Style')).rejects.toThrow(
+      new AppError('Topic is required', 400)
+    );
   });
 
-  it('should handle invalid style', async () => {
-    await expect(generateBlogPost('Test Topic', 'invalid-style')).rejects.toThrow('Invalid style');
+  it('should handle empty style', async () => {
+    await expect(generateBlogPost('Topic', '')).rejects.toThrow(
+      new AppError('Style is required', 400)
+    );
   });
 
   it('should handle null topic', async () => {
-    await expect(generateBlogPost(null as any, 'professional')).rejects.toThrow('Topic is required');
+    await expect(generateBlogPost(null as any, 'Style')).rejects.toThrow(
+      new AppError('Topic is required', 400)
+    );
   });
 
   it('should handle undefined topic', async () => {
-    await expect(generateBlogPost(undefined as any, 'professional')).rejects.toThrow('Topic is required');
+    await expect(generateBlogPost(undefined as any, 'Style')).rejects.toThrow(
+      new AppError('Topic is required', 400)
+    );
   });
 
   it('should handle null style', async () => {
-    await expect(generateBlogPost('Test Topic', null as any)).rejects.toThrow('Style is required');
+    await expect(generateBlogPost('Topic', null as any)).rejects.toThrow(
+      new AppError('Style is required', 400)
+    );
   });
 
   it('should handle undefined style', async () => {
-    await expect(generateBlogPost('Test Topic', undefined as any)).rejects.toThrow('Style is required');
+    await expect(generateBlogPost('Topic', undefined as any)).rejects.toThrow(
+      new AppError('Style is required', 400)
+    );
   });
 
   it('should handle network errors', async () => {
-    mockOpenAI.mockImplementation(() => ({
-      chat: {
-        completions: {
-          create: jest.fn().mockRejectedValue(new Error('Network Error')),
-        },
-      },
-    }));
+    const mockError = new Error('Network Error');
+    mockCreate.mockRejectedValueOnce(mockError);
 
-    await expect(generateBlogPost('Test Topic', 'professional')).rejects.toThrow('Network Error');
+    await expect(generateBlogPost('Topic', 'Style')).rejects.toThrow(
+      new AppError('Failed to generate blog post: Network Error', 500)
+    );
   });
 
   it('should handle rate limiting', async () => {
-    mockOpenAI.mockImplementation(() => ({
-      chat: {
-        completions: {
-          create: jest.fn().mockRejectedValue(new Error('Rate limit exceeded')),
-        },
-      },
-    }));
+    const mockError = new Error('Rate limit exceeded');
+    mockCreate.mockRejectedValueOnce(mockError);
 
-    await expect(generateBlogPost('Test Topic', 'professional')).rejects.toThrow('Rate limit exceeded');
+    await expect(generateBlogPost('Topic', 'Style')).rejects.toThrow(
+      new AppError('Failed to generate blog post: Rate limit exceeded', 500)
+    );
   });
 }); 

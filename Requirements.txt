@@ -1,3 +1,12 @@
+# Iteration guidelines:
+- All tests should complete in 1 second. If they do not, the services they use should be mocked.
+- When testing, run tests individudally, never use npm test to run everything at once. 
+- Use print debugging to narrow down the problem.
+- After every time a test fails, repeat to me the EXACT error message that the test outputted, and describe to me what you think will solve this error.
+ For example:
+ - Test XYZ failed
+ - It failed due to the error "got 0 dogs expected 1"
+ - The cause is likely that the getDogs function should return more dogs
  Objective
  build, deploy, and scale an AI-driven web app that provides dynamic content generation. The app should be built using React, Node.js, and modern cloud tools, and should be fully dockerized, scalable, and production-ready.
 At the end of the task, you will also write a technical document describing your thought process, technical choices, and how you approached the task.

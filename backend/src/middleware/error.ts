@@ -16,7 +16,10 @@ export const errorHandler = async (
   }
 
   if (error.name === 'ValidationError') {
-    return errorResponse(res, error.message, 400);
+    const message = Object.values(error.errors)
+      .map((err: any) => err.message)
+      .join(', ');
+    return errorResponse(res, message, 400);
   }
 
   if (error.code === 11000) {
@@ -31,5 +34,5 @@ export const errorHandler = async (
     return errorResponse(res, 'Not logged in', 401);
   }
 
-  return errorResponse(res, error.message || 'Internal server error', 500);
+  return errorResponse(res, 'Something went wrong', 500);
 }; 

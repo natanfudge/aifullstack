@@ -48,7 +48,7 @@ describe('Error Handler Middleware', () => {
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({
       success: false,
-      error: 'Regular error message',
+      error: 'Something went wrong',
     });
   });
 

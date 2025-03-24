@@ -13,7 +13,7 @@ describe('Response Utils', () => {
 
   describe('successResponse', () => {
     it('should send success response with data', () => {
-      const data = { message: 'Success' };
+      const data = { id: 1, name: 'Test' };
       successResponse(mockRes as Response, data);
 
       expect(mockRes.status).toHaveBeenCalledWith(200);
@@ -50,7 +50,7 @@ describe('Response Utils', () => {
       expect(mockRes.status).toHaveBeenCalledWith(200);
       expect(mockRes.json).toHaveBeenCalledWith({
         success: true,
-        data: undefined,
+        data: null,
       });
     });
 
@@ -77,8 +77,8 @@ describe('Response Utils', () => {
   });
 
   describe('errorResponse', () => {
-    it('should send error response with message', () => {
-      const error = 'Error message';
+    it('should send error response with string message', () => {
+      const error = 'Test error';
       errorResponse(mockRes as Response, error);
 
       expect(mockRes.status).toHaveBeenCalledWith(500);
@@ -99,36 +99,6 @@ describe('Response Utils', () => {
       });
     });
 
-    it('should handle null error', () => {
-      errorResponse(mockRes as Response, null);
-
-      expect(mockRes.status).toHaveBeenCalledWith(500);
-      expect(mockRes.json).toHaveBeenCalledWith({
-        success: false,
-        error: null,
-      });
-    });
-
-    it('should handle undefined error', () => {
-      errorResponse(mockRes as Response, undefined);
-
-      expect(mockRes.status).toHaveBeenCalledWith(500);
-      expect(mockRes.json).toHaveBeenCalledWith({
-        success: false,
-        error: undefined,
-      });
-    });
-
-    it('should handle empty string error', () => {
-      errorResponse(mockRes as Response, '');
-
-      expect(mockRes.status).toHaveBeenCalledWith(500);
-      expect(mockRes.json).toHaveBeenCalledWith({
-        success: false,
-        error: '',
-      });
-    });
-
     it('should handle Error object', () => {
       const error = new Error('Test error');
       errorResponse(mockRes as Response, error);
@@ -140,19 +110,39 @@ describe('Response Utils', () => {
       });
     });
 
-    it('should handle object error', () => {
-      const error = { message: 'Object error' };
-      errorResponse(mockRes as Response, error);
+    it('should handle array of errors', () => {
+      const errors = ['Error 1', 'Error 2'];
+      errorResponse(mockRes as Response, errors);
 
       expect(mockRes.status).toHaveBeenCalledWith(500);
       expect(mockRes.json).toHaveBeenCalledWith({
         success: false,
-        error: JSON.stringify(error),
+        error: 'Error 1, Error 2',
       });
     });
 
-    it('should handle array error', () => {
-      const error = ['Error 1', 'Error 2'];
+    it('should handle null error', () => {
+      errorResponse(mockRes as Response, null);
+
+      expect(mockRes.status).toHaveBeenCalledWith(500);
+      expect(mockRes.json).toHaveBeenCalledWith({
+        success: false,
+        error: 'Something went wrong',
+      });
+    });
+
+    it('should handle undefined error', () => {
+      errorResponse(mockRes as Response, undefined);
+
+      expect(mockRes.status).toHaveBeenCalledWith(500);
+      expect(mockRes.json).toHaveBeenCalledWith({
+        success: false,
+        error: 'Something went wrong',
+      });
+    });
+
+    it('should handle object error', () => {
+      const error = { code: 404, message: 'Not found' };
       errorResponse(mockRes as Response, error);
 
       expect(mockRes.status).toHaveBeenCalledWith(500);

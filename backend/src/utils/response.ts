@@ -1,6 +1,6 @@
 import { Response } from 'express';
 
-export const successResponse = (res: Response, data: any, statusCode: number = 200) => {
+export const successResponse = (res: Response, data: any = null, statusCode: number = 200) => {
   res.status(statusCode).json({
     success: true,
     data,
@@ -8,20 +8,16 @@ export const successResponse = (res: Response, data: any, statusCode: number = 2
 };
 
 export const errorResponse = (res: Response, error: any, statusCode: number = 500) => {
-  let errorMessage = 'Internal server error';
+  let errorMessage: string;
 
   if (error instanceof Error) {
     errorMessage = error.message;
-  } else if (typeof error === 'string') {
-    errorMessage = error;
-  } else if (error === null) {
-    errorMessage = 'null';
-  } else if (error === undefined) {
-    errorMessage = 'undefined';
-  } else if (typeof error === 'object') {
-    errorMessage = JSON.stringify(error);
   } else if (Array.isArray(error)) {
     errorMessage = error.join(', ');
+  } else if (typeof error === 'object' && error !== null) {
+    errorMessage = JSON.stringify(error);
+  } else {
+    errorMessage = error?.toString() || 'Something went wrong';
   }
 
   res.status(statusCode).json({

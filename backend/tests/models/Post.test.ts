@@ -31,7 +31,7 @@ describe('Post Model', () => {
     expect(post._id).toBeDefined();
     expect(post.title).toBe(postData.title);
     expect(post.content).toBe(postData.content);
-    expect(post.userId.toString()).toBe(testUser._id.toString());
+    expect(post.get('userId').toString()).toBe(testUser._id.toString());
     expect(post.isDraft).toBe(true);
     expect(post.createdAt).toBeDefined();
     expect(post.updatedAt).toBeDefined();
@@ -89,8 +89,8 @@ describe('Post Model', () => {
     const createdAt = post.createdAt;
     const updatedAt = post.updatedAt;
 
-    // Wait a bit to ensure timestamp difference
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Wait a shorter time to ensure timestamp difference
+    await new Promise(resolve => setTimeout(resolve, 100));
 
     post.title = 'Updated Title';
     await post.save();
@@ -108,7 +108,7 @@ describe('Post Model', () => {
     });
 
     const populatedPost = await Post.findById(post._id).populate('userId', 'email');
-    expect(populatedPost?.userId).toHaveProperty('email', testUser.email);
+    expect(populatedPost?.get('userId')).toHaveProperty('email', testUser.email);
   });
 
   it('should handle long content', async () => {

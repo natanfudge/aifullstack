@@ -19,6 +19,8 @@ describe('Config', () => {
     process.env.OPENAI_API_KEY = 'test-key';
     process.env.NODE_ENV = 'test';
 
+    const { config } = jest.requireActual('../../src/utils/config');
+
     expect(config.nodeEnv).toBe('test');
     expect(config.port).toBe(3000);
     expect(config.mongoUri).toBe('mongodb://localhost:27017/test');
@@ -32,6 +34,8 @@ describe('Config', () => {
     delete process.env.JWT_SECRET;
     delete process.env.OPENAI_API_KEY;
     delete process.env.NODE_ENV;
+
+    const { config } = jest.requireActual('../../src/utils/config');
 
     expect(config.nodeEnv).toBe('development');
     expect(config.port).toBe(3000);
@@ -47,6 +51,8 @@ describe('Config', () => {
     process.env.OPENAI_API_KEY = '';
     process.env.NODE_ENV = '';
 
+    const { config } = jest.requireActual('../../src/utils/config');
+
     expect(config.nodeEnv).toBe('development');
     expect(config.port).toBe(3000);
     expect(config.mongoUri).toBe('mongodb://localhost:27017/blog-post-generator');
@@ -61,6 +67,8 @@ describe('Config', () => {
     delete process.env.OPENAI_API_KEY;
     delete process.env.NODE_ENV;
 
+    const { config } = jest.requireActual('../../src/utils/config');
+
     expect(config.nodeEnv).toBe('development');
     expect(config.port).toBe(3000);
     expect(config.mongoUri).toBe('mongodb://localhost:27017/blog-post-generator');
@@ -70,29 +78,34 @@ describe('Config', () => {
 
   it('should handle production environment', () => {
     process.env.NODE_ENV = 'production';
+    const { config } = jest.requireActual('../../src/utils/config');
     expect(config.nodeEnv).toBe('production');
   });
 
   it('should handle development environment', () => {
     process.env.NODE_ENV = 'development';
+    const { config } = jest.requireActual('../../src/utils/config');
     expect(config.nodeEnv).toBe('development');
   });
 
   it('should handle custom MongoDB URI', () => {
     const customUri = 'mongodb://custom-host:27017/custom-db';
     process.env.MONGODB_URI = customUri;
+    const { config } = jest.requireActual('../../src/utils/config');
     expect(config.mongoUri).toBe(customUri);
   });
 
   it('should handle custom JWT secret', () => {
     const customSecret = 'custom-secret-key';
     process.env.JWT_SECRET = customSecret;
+    const { config } = jest.requireActual('../../src/utils/config');
     expect(config.jwtSecret).toBe(customSecret);
   });
 
   it('should handle custom OpenAI API key', () => {
     const customKey = 'custom-openai-key';
     process.env.OPENAI_API_KEY = customKey;
+    const { config } = jest.requireActual('../../src/utils/config');
     expect(config.openaiApiKey).toBe(customKey);
   });
 }); 

@@ -1,0 +1,2 @@
+1. Always run tests as individual files, e.g. `npm test path/to/things.test.ts`
+2. Use print debugging to solve issues before rerunning tests.
